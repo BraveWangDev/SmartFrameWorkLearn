@@ -14,15 +14,15 @@ public class CustomerService {
     /**
      * 获取客户列表
      */
-    public List<Customer> getCustomerList(String keyword){
-        //TODO
+    public List<Customer> getCustomerList() {
+        // TODO
         return null;
     }
 
     /**
      * 获取客户
      */
-    public Customer getCustomer(long id){
+    public Customer getCustomer(long id) {
         // TODO
         return null;
     }
@@ -30,7 +30,15 @@ public class CustomerService {
     /**
      * 创建客户
      */
-    public boolean createCustomer(Map<String, Object> fieldMap){
+    public boolean createCustomer(Map<String, Object> fieldMap) {
+        // TODO
+        return false;
+    }
+
+    /**
+     * 更新客户
+     */
+    public boolean updateCustomer(long id, Map<String, Object> fieldMap) {
         // TODO
         return false;
     }
@@ -38,7 +46,7 @@ public class CustomerService {
     /**
      * 删除客户
      */
-    public boolean deleteCustomer(long id){
+    public boolean deleteCustomer(long id) {
         // TODO
         return false;
     }
