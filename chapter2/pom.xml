@@ -7,6 +7,7 @@
     <groupId>org.smart4j</groupId>
     <artifactId>chapter2</artifactId>
     <version>1.0.0</version>
+    <!--打包方式:默认jar-->
     <packaging>war</packaging>
 
     <!--1,(必须)需要统一源码编码方式,否则Maven编译源码时会出现警告,选用UTF-8-->
