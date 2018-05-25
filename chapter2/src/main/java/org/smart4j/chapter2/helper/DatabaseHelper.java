@@ -27,6 +27,9 @@ public final class DatabaseHelper {
     // DbUtils类库提供的QueryRunner对象可以面向实体(Entity)进行查询
     private static final QueryRunner QUERY_RUNNER = new QueryRunner();
 
+    // 隔离线程:用于保存当前线程的Connection对象
+    private static final ThreadLocal<Connection> CONNECTION_HOLDER = new ThreadLocal<Connection>();
+
     /**
      * 静态初始化
      *      读取数据库配置文件
@@ -49,11 +52,19 @@ public final class DatabaseHelper {
      * 获取数据库连接
      */
     public static Connection getConnection() {
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        } catch (SQLException e) {
-            LOGGER.error("get connection failure", e);
+        // 每次获取Connection连接,先查看是否存在
+        Connection conn = CONNECTION_HOLDER.get();
+        if(conn == null){
+            try {
+                LOGGER.info("创建Connection");
+                conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            } catch (SQLException e) {
+                LOGGER.error("get connection failure", e);
+                throw new RuntimeException(e);
+            } finally {
+                // 将Connection保存到ThreadLocal中
+                CONNECTION_HOLDER.set(conn);
+            }
         }
         return conn;
     }
@@ -61,12 +72,19 @@ public final class DatabaseHelper {
     /**
      * 关闭数据库连接
      */
-    public static void closeConnection(Connection conn){
+    public static void closeConnection(){
+        // 获取当前线程Connection对象
+        Connection conn = CONNECTION_HOLDER.get();
         if(conn != null){
             try {
                 conn.close();
+                LOGGER.info("销毁Connection");
             } catch (SQLException e) {
                 LOGGER.error("close connection failure", e);
+                throw new RuntimeException(e);
+            } finally {
+                // 销毁当前线程的Connection对象
+                CONNECTION_HOLDER.remove();
             }
         }
     }
@@ -82,6 +100,8 @@ public final class DatabaseHelper {
         } catch (SQLException e) {
             LOGGER.error("query entity list failure", e);
             throw new RuntimeException(e);
+        }finally {
+            closeConnection();
         }
         return entityList;
     }

@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.smart4j.chapter2.helper.DatabaseHelper;
 import org.smart4j.chapter2.model.Customer;
 
-import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
@@ -21,14 +20,8 @@ public class CustomerService {
      * 获取客户列表
      */
     public List<Customer> getCustomerList() {
-        Connection conn = DatabaseHelper.getConnection();
-        try{
-            String sql = "select * from customer";
-            return DatabaseHelper.queryEntityList(Customer.class, sql);
-        }finally {
-            // 使用DatabaseHelper封装的方法,获取数据库连接
-            DatabaseHelper.closeConnection(conn);
-        }
+        String sql = "select * from customer";
+        return DatabaseHelper.queryEntityList(Customer.class, sql);
     }
 
     /**
