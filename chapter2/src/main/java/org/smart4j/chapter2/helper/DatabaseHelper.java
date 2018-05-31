@@ -10,6 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.smart4j.chapter2.util.CollectionUtil;
 import org.smart4j.chapter2.util.PropsUtil;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -245,4 +249,26 @@ public final class DatabaseHelper {
         String sql = "DELETE FROM " + getTableName(entityClass) + " WHERE id = ?";
         return executeUpdate(sql, id) == 1;
     }
+
+    /**
+     * 执行SQL文件
+     */
+    public static void executeSqlFile(String filePath) {
+        //获取当前线程上下文中的ClassLoader,通过"sql/customer_init.sql"获取一个InputStream对象
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
+        //通过输入流创建BufferReader
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        // 循环读取每一行,并调用DatabaseHelper.executeUpdate执行每一条sql
+
+        try {
+            String sql;
+            while( (sql=reader.readLine()) != null){
+                executeUpdate(sql);
+            }
+        } catch (IOException e) {
+            LOGGER.error("execute sql file failure", e);
+            throw new RuntimeException(e);
+        }
+    }
+
 }
